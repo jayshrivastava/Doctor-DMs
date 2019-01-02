@@ -1,0 +1,20 @@
+{
+  "name": "messaging",
+  "version": "0.0.0",
+  "description": "",
+  "author": "doctordms <dmmydoctor@gmail.com>",
+  "main": "functions/__main__.js",
+  "dependencies": {
+    "lib": "^3.0.2"
+  },
+  "private": true,
+  "stdlib": {
+    "build": "faaslang",
+    "name": "doctordms/messaging",
+    "timeout": 10000,
+    "personalize": {
+      "keys": [],
+      "user": []
+    }
+  }
+}
