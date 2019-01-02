@@ -2,7 +2,7 @@
   "name": "vue",
   "version": "0.0.0",
   "description": "",
-  "author": "Jayant Shrivastava <jshrivastava03@gmail.com>",
+  "author": "doctordms <dmmydoctor@gmail.com>",
   "main": "f/main/index.js",
   "dependencies": {
     "lib": "^3.0.2",
@@ -12,7 +12,7 @@
   "private": true,
   "stdlib": {
     "build": "faaslang",
-    "name": "jshrivastava/vue",
+    "name": "doctordms/vue",
     "timeout": 10000,
     "publish": true,
     "personalize": {

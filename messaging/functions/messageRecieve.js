@@ -1,12 +1,12 @@
 const lib = require('lib')({token: process.env.STDLIB_TOKEN});
 
-// function generate_symptom_string(symptoms) {
-//     let s_string = '';
-//         symptoms.forEach((sym, index) => {
-//            s_string += `&_symptoms[]="${sym}"`;
-//         })
-//     return s_string;
-// }
+function generate_symptom_string(symptoms) {
+    let s_string = '';
+        symptoms.forEach((sym, index) => {
+           s_string += `&_symptoms[]="${sym}"`;
+        })
+    return s_string;
+}
 
 /**
  * @param {string} sender The phone number that sent the text to be handled
@@ -15,7 +15,7 @@ const lib = require('lib')({token: process.env.STDLIB_TOKEN});
  * @param {string} createdDatetime Datetime when the SMS was sent
  * @returns {string}
  */
-module.exports = async(sender = '', receiver = '', message = 'describe reflux disease', createdDatetime = '', context) => {
+module.exports = async(sender = '', receiver = '', message = 'diagnose male 18 skin rash, fever', createdDatetime = '', context) => {
     //CHECK QUERY
     var mssg = message.toLowerCase();
     var type_full = mssg.match(/(treatment for|treat|diagnose|describe)(,*)/i);
@@ -74,23 +74,17 @@ module.exports = async(sender = '', receiver = '', message = 'describe reflux di
             console.log('Generated Response: ')
             console.log(message_response);
 
-            // let symptoms_string = generate_symptom_string(symptoms);
+            let symptoms_string = generate_symptom_string(symptoms);
             const url_age = `?_age=${age}`;
             const url_sex = `&_sex=${sex}`;
-            const url_symptoms = `&_symptoms=${encodeURIComponent(JSON.stringify(symptoms))}`;
-            // const webpage_url = `https://pwnclub.lib.id/deltahacks@dev/${url_age}${url_sex}${url_symptoms}`;
+            const url_symptoms = `&_symptoms=${encodeURIComponent(JSON.stringify(symptoms_string))}`;
+            // const webpage_url = `https://doctordms.lib.id/vue@dev/${url_age}${url_sex}${url_symptoms}`;
             const webpage_url = '';
 
             //TEXT USER USING MESSAGEBIRD API
-            // let result = await lib.messagebird.tel.sms({
-            //     originator: receiver,
-            //     recipient: sender,
-            //     body: `${message_response} \nTake a closer look here: ${webpage_url}`
-            // });
-
             let result = await lib.doctordms.messaging['@dev'].messageSend({
                 number: sender,
-                message: message_response
+                message: `${message_response} \nTake a closer look here: ${webpage_url}`
             });
 
             console.log(result);
