@@ -67,7 +67,7 @@ module.exports = async(sender = '', receiver = '', message = 'diagnose male 18 s
             });
 
             // console.log('Diagnoses Received from Doctor: ');
-            console.log(res[0]);
+            // console.log(res[0]);
 
             let message_response = '';
 
@@ -80,7 +80,9 @@ module.exports = async(sender = '', receiver = '', message = 'diagnose male 18 s
                     message_response += `However, other possible issues worth looking in to are:\n\n`;
 
                     _.forEach(res, (illness, i) => {
-                        message_response += `${i}. ${illness.Issue.Name} (${Math.round(Number(illness.Issue.Accuracy)*10)/10}%)\n`;
+                        if (i > 0) {
+                            message_response += `${i}. ${illness.Issue.Name} (${Math.round(Number(illness.Issue.Accuracy)*10)/10}%)\n`;
+                        }
                     });
                 }
             } else {
