@@ -1,4 +1,7 @@
 const lib = require('lib')({token: process.env.STDLIB_TOKEN});
+const _ = require('lodash');
+
+const apiMedicData = require('../data/symptomsAndIllnesses')
 
 function generate_symptom_string(symptoms) {
     let s_string = '';
@@ -16,14 +19,19 @@ function generate_symptom_string(symptoms) {
  * @returns {string}
  */
 module.exports = async(sender = '', receiver = '', message = 'diagnose male 18 skin rash, fever', createdDatetime = '', context) => {
+
     //CHECK QUERY
     var mssg = message.toLowerCase();
-    var type_full = mssg.match(/(treatment for|treat|diagnose|describe)(,*)/i);
-    var type = type_full[1];
+    var type_full = mssg.match(/(treatment for|treat|diagnose|describe|illnesses|symptoms)(,*)/i);
+    var type;
+    
+    if (type_full) {
 
-    mssg = mssg.replace(type_full[0], '').trim();
-    console.log(type);
-    console.log(mssg);
+        type = type_full[1];
+        mssg = mssg.replace(type_full[0], '').trim();
+    } else {
+        type = 'Invalid Format';
+    }
 
     switch (type) {
 
@@ -37,19 +45,18 @@ module.exports = async(sender = '', receiver = '', message = 'diagnose male 18 s
             var age_full = mssg.match(/(\d+)(,*)/);
             var age = age_full[1];
             mssg = mssg.replace(age_full[0], '').trim();
-            console.log("age: " + age);
+            // console.log("age: " + age);
 
             var sex_full = mssg.match(/(male|female|m|f|boy|girl)(,*)/i);
             var sex = sex_full[1];
             mssg = mssg.replace(sex_full[0], '').trim();
             if (sex == 'm' || sex == 'boy') sex = 'male';
             if (sex == 'f' || sex == 'girl') sex = 'female';
-            console.log("sex: " + sex);
+            // console.log("sex: " + sex);
 
             //PARSE
             var symptoms = mssg.split(',').map(symptom => symptom.trim());
-            console.log(symptoms);
-            console.log(mssg);
+            // console.log(symptoms);
 
             //GET ISSUES FROM DOCTOR API
 
@@ -59,8 +66,8 @@ module.exports = async(sender = '', receiver = '', message = 'diagnose male 18 s
                 _symptoms: symptoms // (required)
             });
 
-            console.log('Diagnoses Received from Doctor: ');
-            console.log(res);
+            // console.log('Diagnoses Received from Doctor: ');
+            // console.log(res);
 
             let message_response = `I am ${res[0].Issue.Accuracy}% sure you have ${res[0].Issue.Name}.\n`;
             if (res.length > 1) {
@@ -84,10 +91,10 @@ module.exports = async(sender = '', receiver = '', message = 'diagnose male 18 s
             //TEXT USER USING MESSAGEBIRD API
             let result = await lib.doctordms.messaging['@dev'].messageSend({
                 number: sender,
-                message: `${message_response} \nTake a closer look here: ${webpage_url}`
+                message: `${message_response}` //  \nTake a closer look here: ${webpage_url}`
             });
 
-            console.log(result);
+            // console.log(result);
         
             break;
 
@@ -142,13 +149,57 @@ module.exports = async(sender = '', receiver = '', message = 'diagnose male 18 s
 
             break;
         }
-        default: {
-            console.log('sending sms FORMAT ERROR');
+        case "illnesses": {
 
-            let result = await lib.messagebird.tel.sms({
-                originator: receiver,
-                recipient: sender,
-                body: "Error: BAD format: <" + pull + "> Please enter a proper format" + new Date()
+            var data = await apiMedicData();
+            
+            var message = '';
+
+            _.forEach(data.illnesses, (illness) => {
+                message += illness.Name + ', ';
+            });
+            message = message.slice(0, -2);
+            
+            let result = await lib.doctordms.messaging['@dev'].messageSend({
+                number: sender,
+                message: message
+            }); 
+
+            break;
+        }
+        case "symptoms": {
+
+            var data = await apiMedicData();
+            
+            var message = '';
+
+            _.forEach(data.symptoms, (symptom) => {
+                message += symptom.Name + ', ';
+            });
+            message = message.slice(0, -2);
+            
+            let result = await lib.doctordms.messaging['@dev'].messageSend({
+                number: sender,
+                message: message
+            }); 
+
+            break;
+        }
+        default: {
+
+            var message = "Thanks for using Doctor DMs! Let's get started\n\n" + 
+                "We support 3 functions: \n\n" + 
+                " - diagnose {AGE} {SEX} {SYMPTOM1}, {SYMPTOM2}...\n" + 
+                " - treat {ILLNESS}\n" + 
+                " - describe {ILLNESS}\n\n" + 
+                "For example, try texting 'diagnose male 18 cough, sneezing' or 'treat reflux disease'\n\n" + 
+                "For a list of illnesses, text us 'illnesses'\n" + 
+                "For a list of symptoms, text us 'symptoms'\n" + 
+                "Note: We are currently using sandbox data, so the data available may be limited"
+
+            let result = await lib.doctordms.messaging['@dev'].messageSend({
+                number: sender,
+                message: message
             });
         }
     }
