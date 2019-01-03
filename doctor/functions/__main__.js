@@ -1,10 +1,8 @@
-// const lib = require('lib')({token: process.env.STDLIB_TOKEN});
 const request = require("request");
 const helper = require("../helpers");
-const _ = require('lodash')
+const _ = require('lodash');
 
 const URL_BASE = `${process.env.APIMEDIC_URL}`;
-const URL_TOKEN = `token=${process.env.APIMEDIC_TOKEN}&`;
 const URL_LANG = `language=en-gb&`;
 const URL_FORMAT = `format=json`;
 let URL_TYPE = { symptoms: `symptoms?`, diagnosis: `diagnosis?`};
@@ -24,31 +22,34 @@ function get_diagnosis (url, callback) {
 * @param {array} _symptoms Symptoms of the patient
 * @returns {array} Possible Diseases
 */
-module.exports = (_sex, _age, _symptoms, context, callback) => {
-
-    // For commandline testing, we would pass the symtoms in as a comma separated string
-    // var symptoms = _symptoms.split(', ');
+module.exports = (_sex = "male", _age = "18", _symptoms = ['cough'], context, callback) => {
 
     var symptoms = _.map(_symptoms, (symptom) => symptom.trim());
-    let url = `${URL_BASE}${URL_TYPE.symptoms}${URL_TOKEN}${URL_LANG}${URL_FORMAT}`;
 
-    helper.get_symptoms_ids(symptoms, url, ids => {
+    helper.fetch_api_medic_token().then((URL_TOKEN) => {
 
-        const id_string = helper.generate_id_string(ids);
-        const URL_SYMPTOMS = `symptoms=[${id_string}]&`;
-        const URL_SEX = `gender=${_sex.trim()}&`;
-        const URL_AGE = `year_of_birth=${Number(new Date().getFullYear()) - _age.trim()}&`;
+        URL_TOKEN = `token=${URL_TOKEN}&`;
 
-        url = `${URL_BASE}${URL_TYPE.diagnosis}${URL_TOKEN}${URL_SYMPTOMS}${URL_SEX}${URL_AGE}${URL_LANG}${URL_FORMAT}`;
+        let url = `${URL_BASE}${URL_TYPE.symptoms}${URL_TOKEN}${URL_LANG}${URL_FORMAT}`;
 
-        get_diagnosis(url, body => {
+        helper.get_symptoms_ids(symptoms, url, ids => {
 
-            let issues = [];
-            body.forEach(object => {
-                issues.push(object);
-            })
+            const id_string = helper.generate_id_string(ids);
+            const URL_SYMPTOMS = `symptoms=[${id_string}]&`;
+            const URL_SEX = `gender=${_sex.trim()}&`;
+            const URL_AGE = `year_of_birth=${Number(new Date().getFullYear()) - _age.trim()}&`;
 
-            callback(null, issues);
-        });
-    })
+            url = `${URL_BASE}${URL_TYPE.diagnosis}${URL_TOKEN}${URL_SYMPTOMS}${URL_SEX}${URL_AGE}${URL_LANG}${URL_FORMAT}`;
+
+            get_diagnosis(url, body => {
+
+                let issues = [];
+                body.forEach(object => {
+                    issues.push(object);
+                })
+
+                callback(null, issues);
+            });
+        })
+    });
 };

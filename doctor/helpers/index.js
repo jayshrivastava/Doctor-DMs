@@ -1,7 +1,38 @@
 const request = require('request');
 const _ = require('lodash');
+const cryptojs = require('crypto-js');
+
+const APIMEDIC_KEY = `${process.env.APIMEDIC_KEY}`;
+const APIMEDIC_USER = `${process.env.APIMEDIC_USER}`;
+const APIMEDIC_LOGIN_URL = `${process.env.APIMEDIC_LOGIN_URL}`;
 
 const helper = {
+
+    fetch_api_medic_token: function() {
+
+        return new Promise(function (resolve, reject) {
+
+            // Generate Token From Auth API
+            var computedHash = cryptojs.HmacMD5(APIMEDIC_LOGIN_URL, APIMEDIC_KEY);
+            var computedHashString = computedHash.toString(cryptojs.enc.Base64);   
+
+            const options = {
+                url: APIMEDIC_LOGIN_URL,
+                headers: {
+                    'Authorization': 'Bearer ' + APIMEDIC_USER + ':' + computedHashString
+                }
+            };
+
+            request.post(options, (err, res, body) => {
+                if (err) {
+                    reject(error);
+                } else {
+                    resolve(JSON.parse(body).Token);
+                }
+            });
+        });
+    },
+
     get_symptoms_ids: function(symptoms, url, callback) {
         request(url, (err, res, body) => {
 
