@@ -67,15 +67,27 @@ module.exports = async(sender = '', receiver = '', message = 'diagnose male 18 s
             });
 
             // console.log('Diagnoses Received from Doctor: ');
-            // console.log(res);
+            console.log(res[0]);
 
-            let message_response = `I am ${res[0].Issue.Accuracy}% sure you have ${res[0].Issue.Name}.\n`;
-            if (res.length > 1) {
-                message_response += `However, other possible issues worth looking in to are:\n\n`;
-                for (var i = 1; i < 3; i++) {
-                    if (res[i] != null)
-                        message_response += `${i}. ${res[i].Issue.Name} (${Math.round(Number(res[i].Issue.Accuracy)*10)/10}%)\n`;
+            let message_response = '';
+
+            if (res.length) {
+
+                message_response = `I am ${res[0].Issue.Accuracy}% sure you have ${res[0].Issue.Name}.\n`;
+
+                if (res.length > 1) {
+
+                    message_response += `However, other possible issues worth looking in to are:\n\n`;
+
+                    _.forEach(res, (illness, i) => {
+                        message_response += `${i}. ${illness.Issue.Name} (${Math.round(Number(illness.Issue.Accuracy)*10)/10}%)\n`;
+                    });
                 }
+            } else {
+
+                message_response = "We could not find an accurate diagnoses for those symptoms." + 
+                "Try using 2-3 symptoms per text and group symptoms by what you think may be related. Eg. 'diagnose female 20 skin rash, fever'.\n\n" + 
+                "Rememeber that you can always text us 'symptoms' for a complete list of symptoms"
             }
 
             console.log('Generated Response: ')
@@ -114,13 +126,17 @@ module.exports = async(sender = '', receiver = '', message = 'diagnose male 18 s
                 _issue: issue, // (required)
             });
 
-            //SEND DIAGNOSES USING MESSAGEBIRD APIs
+            message_response = message_response === 'None' ? 'That illness does not exist in our database. ' + 
+                "Any illness returned by our 'diagnose' operation is valid.\n\n" + 
+                "Remember that you can always text 'illnesses' for a compelete list of illnesses" : message_response;
+
+            // SEND DIAGNOSES USING MESSAGEBIRD APIs
             let result = await lib.doctordms.messaging['@dev'].messageSend({
                 number: sender,
                 message: message_response
             });
 
-            console.log(result);
+            // console.log(result);
             break;
         }
         // -------------
@@ -131,15 +147,18 @@ module.exports = async(sender = '', receiver = '', message = 'diagnose male 18 s
 
             //PARSE
             var issue = mssg;
-            console.log(issue);
+            // console.log(issue);
 
             // GET TREATMENT FROM DOCTOR API
-            console.log('bouttadoitoem');
             let message_response = await lib.doctordms.doctor['@dev'].describe({
                 _issue: issue, // (required)
             });
 
-            console.log(message_response);
+            message_response = message_response === 'None' ? 'That illness does not exist in our database. ' + 
+                "Any illness returned by our 'diagnose' operation is valid.\n\n" + 
+                "Remember that you can always text 'illnesses' for a compelete list of illnesses" : message_response;
+
+            // console.log(message_response);
 
             //SEND DIAGNOSES USING MESSAGEBIRD APIs
             let result = await lib.doctordms.messaging['@dev'].messageSend({
@@ -187,7 +206,7 @@ module.exports = async(sender = '', receiver = '', message = 'diagnose male 18 s
         }
         default: {
 
-            var message = "Thanks for using Doctor DMs! Let's get started\n\n" + 
+            var message = "Welcome to Doctor DMs. Let's get started\n\n" + 
                 "We support 3 functions: \n\n" + 
                 " - diagnose {AGE} {SEX} {SYMPTOM1}, {SYMPTOM2}...\n" + 
                 " - treat {ILLNESS}\n" + 
@@ -195,7 +214,8 @@ module.exports = async(sender = '', receiver = '', message = 'diagnose male 18 s
                 "For example, try texting 'diagnose male 18 cough, sneezing' or 'treat reflux disease'\n\n" + 
                 "For a list of illnesses, text us 'illnesses'\n" + 
                 "For a list of symptoms, text us 'symptoms'\n" + 
-                "Note: We are currently using sandbox data, so the data available may be limited"
+                "Note: We are currently using sandbox data, so the data available may be limited\n\n" + 
+                "Thanks for using Doctor DMs!"
 
             let result = await lib.doctordms.messaging['@dev'].messageSend({
                 number: sender,

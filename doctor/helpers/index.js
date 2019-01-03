@@ -78,6 +78,7 @@ const helper = {
         request(url, (err, res, body) => {
             if (err) console.log(err);
             const result = JSON.parse(body);
+            console.log(result);
             callback(result.TreatmentDescription);
         })
     },
