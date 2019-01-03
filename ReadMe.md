@@ -10,6 +10,14 @@ Submission
 ---
 https://deltahacksiv.hackerearth.com/sprints/deltahacks-iv/dashboard/abb9653/submission/
 
+Demo
+---
+Want to try it out? Text 'Hello' to 1+ 204 818 5344  
+
+| Diagnose | Describe | Treat |
+| --- | --- | --- |
+| ![Diagnose](gifs/diagnose.gif) | ![Describe](gifs/describe.gif) | ![Treat](gifs/treat.gif) |
+
 Our stack:
 ---
 - StdLib
@@ -17,12 +25,6 @@ Our stack:
 - Vue.js
 - Bootstrap 4
 - Message Bird
-
-Demo
----
-| Diagnose | Describe | Treat |
-| --- | --- | --- |
-| ![Diagnose](gifs/diagnose.gif) | ![Describe](gifs/describe.gif) | ![Treat](gifs/treat.gif) |
 
 Contributors
 ---
