@@ -2,7 +2,7 @@
   "name": "vue",
   "version": "0.0.0",
   "description": "",
-  "author": "doctordms <dmmydoctor@gmail.com>",
+  "author": "Jayant Shrivastava (https://github.com/jayshrivastava)  Jason Xian  (https://github.com/JasonXian)  Alexander Egorov (acegorov7@gmail.com)  Damian Reiter  (https://github.com/Damian-R)  ",
   "main": "f/main/index.js",
   "dependencies": {
     "lib": "^3.0.2",

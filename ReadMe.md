@@ -30,7 +30,8 @@ Our stack:
 
 Contributors
 ---
-Jason Xian
-Alexander Egorov
-Damian Reiter
-Jason Xian
+Jayant Shrivastava (https://github.com/jayshrivastava)  
+Jason Xian  (https://github.com/JasonXian)  
+Alexander Egorov (acegorov7@gmail.com)  
+Damian Reiter  (https://github.com/Damian-R)  
+
