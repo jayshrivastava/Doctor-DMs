@@ -12,7 +12,7 @@ https://deltahacksiv.hackerearth.com/sprints/deltahacks-iv/dashboard/abb9653/sub
 
 Demo
 ---
-Want to try it out? Text 'Hello' to 1+ 204 818 5344  
+Want to try it out? Text **'Hello'** to **1+ 204 818 5344**  
 
 | Diagnose | Describe | Treat |
 | --- | --- | --- |
